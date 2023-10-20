@@ -3,12 +3,12 @@ package model;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.ParameterizedTest;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class CommentTest {
     Comment comment;
@@ -69,35 +69,41 @@ public class CommentTest {
         assertEquals(expected_date, actual_date);
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({ "hadi, like" })
     @DisplayName("Test to liked a comment")
-    public void CommentLikeTest() {
+    public void CommentLikeTest(String username, String vote) {
         int first_like = comment.getLike();
-        comment.addUserVote("hadi", "like");
+        comment.addUserVote(username, vote);
         assertEquals(first_like + 1, comment.getLike());
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({ "hadi, dislike" })
     @DisplayName("Test to disliked a comment")
-    public void CommentDislikeTest() {
+    public void CommentDislikeTest(String username, String vote) {
         int first_dislike = comment.getDislike();
-        comment.addUserVote("hadi", "dislike");
+        comment.addUserVote(username, vote);
         assertEquals(first_dislike + 1, comment.getDislike());
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({
+            "sana, like",
+            "hadi, dislike"
+    })
     @DisplayName("Test to check the size of UserVote")
-    public void UserVoteLengthTest() {
+    public void UserVoteLengthTest(String username, String vote) {
         int length = comment.getUserVote().size();
-        comment.addUserVote("sana", "like");
-        comment.addUserVote("hadi", "dislike");
-        assertEquals(length + 2, comment.getUserVote().size());
+        comment.addUserVote(username, vote);
+        assertEquals(length + 1, comment.getUserVote().size());
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({ "hadi, dislike" })
     @DisplayName("Test to save the data correctly in UserVote")
-    public void UserVoteTest() {
-        comment.addUserVote("hadi", "dislike");
+    public void UserVoteTest(String username, String vote) {
+        comment.addUserVote(username, vote);
         assertEquals("dislike", comment.getUserVote().get("hadi"));
     }
 }
