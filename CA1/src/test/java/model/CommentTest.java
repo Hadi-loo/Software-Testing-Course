@@ -15,48 +15,55 @@ public class CommentTest {
 
     @BeforeEach
     public void setUp() {
-        comment = new Comment(1, "sana.sarinavaei@gmail.com", "sana", 10, "meh");
+        comment = new Comment();
     }
 
     @Test
     @DisplayName("Simple Test Comment Initialization with Id")
     public void InitialIdTest() {
+        comment.setId(1);
         assertEquals(1, comment.getId());
     }
 
     @Test
     @DisplayName("Simple Test Comment Initialization with userEmail")
     public void InitialEmailTest() {
+        comment.setUserEmail("sana.sarinavaei@gmail.com");
         assertEquals("sana.sarinavaei@gmail.com", comment.getUserEmail());
     }
 
     @Test
     @DisplayName("Simple Test Comment Initialization with username")
     public void InitialUsernameTest() {
+        comment.setUsername("sana");
         assertEquals("sana", comment.getUsername());
     }
 
     @Test
     @DisplayName("Simple Test Comment Initialization with commodityId")
     public void InitialCommodityIdTest() {
+        comment.setCommodityId(10);
         assertEquals(10, comment.getCommodityId());
     }
 
     @Test
     @DisplayName("Simple Test Comment Initialization with text")
     public void InitialTextTest() {
+        comment.setText("meh");
         assertEquals("meh", comment.getText());
     }
 
     @Test
     @DisplayName("Test Comment date not null")
     public void NotNullDateTest() {
+        comment = new Comment(1, "sana.sarinavaei@gmail.com", "sana", 10, "meh");
         assertNotNull(comment.getDate());
     }
 
     @Test
     @DisplayName("Test to check the Comment date")
     public void DateTest() {
+        comment = new Comment(1, "sana.sarinavaei@gmail.com", "sana", 10, "meh");
         // expected date
         Date currentDate = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
