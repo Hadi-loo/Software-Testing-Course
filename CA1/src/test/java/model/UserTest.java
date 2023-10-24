@@ -4,6 +4,7 @@ import exceptions.CommodityIsNotInBuyList;
 import exceptions.InsufficientCredit;
 import exceptions.InvalidCreditRange;
 
+import exceptions.NotInStock;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,42 +20,46 @@ public class UserTest {
     User user;
 
     @BeforeEach
-    public void serUp() {
+    public void setUp() {
         user = new User();
     }
 
+    public void setUpWithArgs() {
+        user = new User("hadi", "1234", "m.h.babalu@gmail.com", "2002-11-03", "Tehran, Iran");
+    }
+
     @Test
-    @DisplayName("Simple Test User Initialization with username")
+    @DisplayName("user username initialed correctly")
     public void InitialUsernameTest() {
-        user.setUsername("hadi");
+        setUpWithArgs();
         assertEquals("hadi", user.getUsername());
     }
 
     @Test
-    @DisplayName("Simple Test User Initialization with password")
+    @DisplayName("user password initialed correctly")
     public void InitialPasswordTest() {
-        user.setPassword("1234");
+        setUpWithArgs();
         assertEquals("1234", user.getPassword());
     }
 
     @Test
-    @DisplayName("Simple Test User Initialization with Email")
+    @DisplayName("user email initialed correctly")
     public void InitialEmailTest() {
-        user.setEmail("m.h.babalu@gmail.com");
+        setUpWithArgs();
         assertEquals("m.h.babalu@gmail.com", user.getEmail());
     }
 
     @Test
-    @DisplayName("Simple Test User Initialization with BirthDate")
+    @DisplayName("user birthDate initialed correctly")
     public void InitialBirthTest() {
-        user.setBirthDate("2000-01-01");
-        assertEquals("2000-01-01", user.getBirthDate());
+        setUpWithArgs();
+        assertEquals("2002-11-03", user.getBirthDate());
     }
 
     @Test
-    @DisplayName("Simple Test User Initialization with Address")
+    @DisplayName("user address initialed correctly")
     public void InitialAddressTest() {
-        user.setAddress("Tehran, Iran");
+        setUpWithArgs();
         assertEquals("Tehran, Iran", user.getAddress());
     }
 
@@ -71,7 +76,7 @@ public class UserTest {
     public void PositiveCreditUserTest(float amount) throws InvalidCreditRange {
         float credit = user.getCredit();
         user.addCredit(amount);
-        assertEquals(credit + amount, user.getCredit());
+        assertEquals(credit + amount, user.getCredit(), 1e-3f);
     }
 
     @ParameterizedTest
@@ -88,7 +93,7 @@ public class UserTest {
     public void PositiveWithdrawUserTest(float amount, float credit) throws InvalidCreditRange, InsufficientCredit {
         user.addCredit(credit);
         user.withdrawCredit(amount);
-        assertEquals(credit - amount, user.getCredit());
+        assertEquals(credit - amount, user.getCredit(), 1e-3f);
     }
 
     @ParameterizedTest
@@ -97,7 +102,28 @@ public class UserTest {
             "2, 1000"
     })
     @DisplayName("add New PurchasedItem in User class")
-    public void AddNewPurchaseItemTest(String id, int quantity) {
+    public void AddNewPurchaseItemTest(String id, int quantity) throws IllegalArgumentException {
+        user.addPurchasedItem(id, quantity);
+        assertTrue(user.getPurchasedList().containsKey(id));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, 0",
+            "2, -10"
+    })
+    @DisplayName("add New PurchasedItem in User class with invalid quantity")
+    public void AddNewPurchaseItemWithInvalidQuantityTest(String id, int quantity) {
+        assertThrows(IllegalArgumentException.class, () -> user.addPurchasedItem(id, quantity));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "1, 500",
+            "2, 1000"
+    })
+    @DisplayName("add New PurchasedItem in User class with correct quantity")
+    public void AddNewPurchaseItemWithCorrectQuantityTest(String id, int quantity) throws IllegalArgumentException {
         user.addPurchasedItem(id, quantity);
         assertEquals(quantity, user.getPurchasedList().get(id));
     }
@@ -108,7 +134,7 @@ public class UserTest {
             "2, 1000, 200"
     })
     @DisplayName("add existing PurchasedItem in User class")
-    public void AddPurchaseItemTest(String id, int quantity, int new_quantity) {
+    public void AddPurchaseItemTest(String id, int quantity, int new_quantity) throws IllegalArgumentException {
         user.addPurchasedItem(id, quantity);
         user.addPurchasedItem(id, new_quantity);
         assertEquals(quantity + new_quantity, user.getPurchasedList().get(id));
@@ -116,29 +142,31 @@ public class UserTest {
 
     @Test
     @DisplayName("add new BuyItem adds to buy list")
-    public void addBuyItemForNewItemAddsToBuyList() {
+    public void addBuyItemForNewItemAddsToBuyList() throws NotInStock {
         Commodity commodityMock = mock(Commodity.class);
         when(commodityMock.getId()).thenReturn("7");
+        when(commodityMock.getInStock()).thenReturn(10);
         user.addBuyItem(commodityMock);
         assertTrue(user.getBuyList().containsKey("7"));
     }
 
     @Test
     @DisplayName("add new BuyItem inserts correct quantity")
-    public void addBuyItemForNewItemInsertsCorrectQuantity() {
+    public void addBuyItemForNewItemInsertsCorrectQuantity() throws NotInStock {
         Commodity commodityMock = mock(Commodity.class);
         when(commodityMock.getId()).thenReturn("7");
+        when(commodityMock.getInStock()).thenReturn(10);
         user.addBuyItem(commodityMock);
         assertEquals(1, user.getBuyList().get("7"));
     }
 
-    // CHECKME: this could be implemented simpler (now we are using delta assertion)
     // CHECKME: should we use addBuyItem() or just directly set the buyList?
     @Test
     @DisplayName("add existing BuyItem increases quantity")
-    public void addBuyItemForExistingItemIncreasesQuantity() {
+    public void addBuyItemForExistingItemIncreasesQuantity() throws NotInStock {
         Commodity commodityMock = mock(Commodity.class);
         when(commodityMock.getId()).thenReturn("7");
+        when(commodityMock.getInStock()).thenReturn(10);
         user.addBuyItem(commodityMock);
         Integer old_quantity = user.getBuyList().get("7");
         user.addBuyItem(commodityMock);
@@ -155,29 +183,26 @@ public class UserTest {
 
     @Test
     @DisplayName("removes item from buy list when quantity is 1")
-    public void removeItemFromBuyListRemovesItemWhenQuantityIs1() throws CommodityIsNotInBuyList {
+    public void removeItemFromBuyListRemovesItemWhenQuantityIs1() throws CommodityIsNotInBuyList, NotInStock {
         Commodity commodityMock = mock(Commodity.class);
         when(commodityMock.getId()).thenReturn("7");
+        when(commodityMock.getInStock()).thenReturn(10);
         user.addBuyItem(commodityMock);
         user.removeItemFromBuyList(commodityMock);
         assertFalse(user.getBuyList().containsKey("7"));
     }
 
-    // CHECKME: this could be implemented simpler (now we are using delta assertion)
     @Test
     @DisplayName("decreases quantity when removing item from buy list")
-    public void removeItemFromBuyListDecreasesQuantity() throws CommodityIsNotInBuyList {
+    public void removeItemFromBuyListDecreasesQuantity() throws CommodityIsNotInBuyList, NotInStock {
         Commodity commodityMock = mock(Commodity.class);
         when(commodityMock.getId()).thenReturn("7");
+        when(commodityMock.getInStock()).thenReturn(10);
         user.addBuyItem(commodityMock);
         user.addBuyItem(commodityMock);
         Integer old_quantity = user.getBuyList().get("7");
         user.removeItemFromBuyList(commodityMock);
         assertEquals(old_quantity-1, user.getBuyList().get("7"));
     }
-
-    // CHECKME: what happens if commodity is null?
-    // CHECKME: what happens if commodity_id is null?
-
 
 }
