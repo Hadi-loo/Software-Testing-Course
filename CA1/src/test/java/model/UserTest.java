@@ -20,36 +20,41 @@ public class UserTest {
 
     @BeforeEach
     public void serUp() {
-        user = new User("hadi", "1234", "m.h.babalu@gmail.com", "2000-01-01", "Tehran, Iran");
+        user = new User();
     }
 
     @Test
     @DisplayName("Simple Test User Initialization with username")
     public void InitialUsernameTest() {
+        user.setUsername("hadi");
         assertEquals("hadi", user.getUsername());
     }
 
     @Test
     @DisplayName("Simple Test User Initialization with password")
     public void InitialPasswordTest() {
+        user.setPassword("1234");
         assertEquals("1234", user.getPassword());
     }
 
     @Test
     @DisplayName("Simple Test User Initialization with Email")
     public void InitialEmailTest() {
+        user.setEmail("m.h.babalu@gmail.com");
         assertEquals("m.h.babalu@gmail.com", user.getEmail());
     }
 
     @Test
     @DisplayName("Simple Test User Initialization with BirthDate")
     public void InitialBirthTest() {
+        user.setBirthDate("2000-01-01");
         assertEquals("2000-01-01", user.getBirthDate());
     }
 
     @Test
     @DisplayName("Simple Test User Initialization with Address")
     public void InitialAddressTest() {
+        user.setAddress("Tehran, Iran");
         assertEquals("Tehran, Iran", user.getAddress());
     }
 
