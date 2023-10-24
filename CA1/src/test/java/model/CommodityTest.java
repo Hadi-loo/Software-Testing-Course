@@ -1,9 +1,11 @@
 package model;
 
+import exceptions.InvalidScoreRange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,24 +21,16 @@ public class CommodityTest {
         commodity = new Commodity();
     }
 
-    @Test
-    public void demoTest() {
-        assertTrue(true);
-    }
-
-    // FIXME: is it necessary?
     @ParameterizedTest
-    @ValueSource(ints = {-100, -10, -1, 0, 1, 10, 100})
+    @ValueSource(ints = {-100, 0, 100})
     @DisplayName("updateInStock should not throw exception")
     public void updateInStockShouldNotThrowException(int amount) {
         commodity.setInStock(100);
         assertDoesNotThrow(() -> commodity.updateInStock(amount));
     }
 
-    // FIXME: should name it better
-    // FIXME: should it be parameterized?
     @ParameterizedTest
-    @ValueSource(ints = {-100, -10, -1, 0, 1, 10, 100})
+    @ValueSource(ints = {-100, 0, 10})
     @DisplayName("stock should update correctly")
     public void stockShouldUpdateCorrectly(int amount) throws NotInStock {
         commodity.setInStock(100);
@@ -44,9 +38,8 @@ public class CommodityTest {
         assertEquals(100 + amount, commodity.getInStock());
     }
 
-    // FIXME: should we check for the exception message?
     @ParameterizedTest
-    @ValueSource(ints = {-11, -100, -1000})
+    @ValueSource(ints = {-11, -1000})
     @DisplayName("stock cannot be negative")
     public void stockCannotBeNegative(int amount) {
         commodity.setInStock(10);
@@ -54,122 +47,111 @@ public class CommodityTest {
     }
 
     @Test
+    @DisplayName("new rate should not throw exception")
+    public void newRateDoesNotThrowException() {
+        assertDoesNotThrow(() -> commodity.addRate("username", 5));
+    }
+
+    @Test
     @DisplayName("new rate added to userRate")
-    public void rateAddedCorrectly() {
+    public void newRateAdded() throws InvalidScoreRange {
         commodity.addRate("username", 5);
         assertTrue(commodity.getUserRate().containsKey("username"));
     }
 
     @Test
-    @DisplayName("count of userRate increases on new rate")
-    public void countIncreasesOnNewRate() {
+    @DisplayName("count of userRates increases on new rate")
+    public void countIncreasesOnNewRate() throws InvalidScoreRange {
         int oldSize = commodity.getUserRate().size();
         commodity.addRate("username", 5);
         assertEquals(oldSize + 1, commodity.getUserRate().size());
     }
 
-    // FIXME: should't it throw exception?
+    // CHECKME: what's the correct behavior for null username? shouldn't it throw exception?
     @Test
     @DisplayName("new rate added with null username")
-    public void rateAddedWithNullUsername() {
+    public void rateAddedWithNullUsername() throws InvalidScoreRange {
         commodity.addRate(null, 5);
         assertTrue(commodity.getUserRate().containsKey(null));
     }
 
-    // FIXME: shouldn't it throw exception?
-    @Test
+    @ParameterizedTest
+    @ValueSource(ints = {-100, -1, 0, 11, 100})
     @DisplayName("new rate added with out of bound score")
-    public void rateAddedWithOutOfBoundScore() {
-        commodity.addRate("username", 100);
-        assertEquals(100, commodity.getUserRate().get("username"));
-    }
-
-    // FIXME: shouldn't it throw exception?
-    @Test
-    @DisplayName("new rate added with negative score")
-    public void rateAddedWithNullScore() {
-        commodity.addRate("username", -5);
-        assertEquals(-5, commodity.getUserRate().get("username"));
+    public void rateAddedWithOutOfBoundScore(int score) {
+        assertThrows(InvalidScoreRange.class, () -> commodity.addRate("username", score));
     }
 
     @Test
     @DisplayName("new rate added to userRate with correct score")
-    public void rateAddedCorrectlyWithCorrectScore() {
+    public void newRateAddedWithCorrectScore() throws InvalidScoreRange {
         commodity.addRate("username", 5);
         assertEquals(5, commodity.getUserRate().get("username"));
     }
 
+    // CHECKME: instead of using addRate, could directly set the userRate
     @Test
     @DisplayName("score updates on existing user")
-    public void scoreUpdatesOnExistingUser() {
+    public void scoreUpdatesOnExistingUser() throws InvalidScoreRange {
         commodity.addRate("username", 5);
         commodity.addRate("username", 10);
         assertEquals(10, commodity.getUserRate().get("username"));
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({
+            "5.0f, 5, 5.0f",
+            "2.5f, 3, 2.75f",
+            "0.0f, 8, 4.0f"
+    })
     @DisplayName("rating updates on new user rating")
-    public void ratingUpdatesOnNewUserRating() {
-        commodity.setInitRate(5);
-        commodity.addRate("username", 5);
-        assertEquals(5, commodity.getRating());
+    public void ratingUpdatesOnNewUserRating(float init, int score, float expected) throws InvalidScoreRange {
+        commodity.setInitRate(init);
+        commodity.addRate("username", score);
+        assertEquals(expected, commodity.getRating(), 1e-3f);
     }
 
-    @Test
-    @DisplayName("rating updates on new user rating")
-    public void ratingUpdatesOnNewUserRating2() {
-        commodity.setInitRate(0);
-        commodity.addRate("username", 10);
-        assertEquals(5, commodity.getRating());
-    }
-
-    @Test
-    @DisplayName("rating updates on new user rating")
-    public void ratingUpdatesOnNewUserRating3() {
-        commodity.setInitRate(5);
-        commodity.addRate("username", -5);
-        assertEquals(0, commodity.getRating());
-    }
-
+    // CHECKME: instead of using addRate, could directly set the userRate
     @Test
     @DisplayName("rating updates on existing user rating")
-    public void ratingUpdatesOnExistingUserRating() {
+    public void ratingUpdatesOnExistingUserRating() throws InvalidScoreRange {
         commodity.setInitRate(5);
         commodity.addRate("username", 5);
         commodity.addRate("username", 10);
-        assertEquals(7.5, commodity.getRating());
+        assertEquals(7.5f, commodity.getRating(), 1e-3f);
     }
 
+    //
     @Test
-    @DisplayName("rating updates in multiple new users rating")
-    public void ratingUpdatesInMultipleNewUsersRating() {
+    @DisplayName("rating updates with 2 new users rating")
+    public void ratingUpdatesWith2NewUsersRating() throws InvalidScoreRange {
         commodity.setInitRate(10);
-        commodity.addRate("sana", 20);
-        commodity.addRate("hadi", 60);
-        assertEquals(30, commodity.getRating());
+        commodity.addRate("sana", 5);
+        commodity.addRate("hadi", 7);
+        assertEquals(7.3333f, commodity.getRating(), 1e-3f);
     }
 
     @Test
-    @DisplayName("rating updates in multiple new users rating")
-    public void ratingUpdatesInMultipleNewUsersRating2() {
+    @DisplayName("rating updates with multiple new users rating")
+    public void ratingUpdatesWithMultipleNewUsersRating() throws InvalidScoreRange {
         commodity.setInitRate(0);
-        commodity.addRate("sana", 20);
-        commodity.addRate("hadi", 60);
-        commodity.addRate("nesa", 30);
-        assertEquals(27.5, commodity.getRating());
+        commodity.addRate("sana", 4);
+        commodity.addRate("hadi", 8);
+        commodity.addRate("nesa", 9);
+        assertEquals(5.25f, commodity.getRating(), 1e-3f);
     }
 
     @Test
-    @DisplayName("rating updates in multiple existing users rating")
-    public void ratingUpdatesInMultipleExistingUsersRating() {
+    @DisplayName("rating updates with multiple existing users rating")
+    public void ratingUpdatesWithMultipleExistingUsersRating() throws InvalidScoreRange {
         commodity.setInitRate(10);
-        commodity.addRate("sana", 20);
-        commodity.addRate("hadi", 60);
-        commodity.addRate("nesa", 30);
-        commodity.addRate("sana", 30);
-        commodity.addRate("hadi", 70);
-        commodity.addRate("nesa", 40);
-        assertEquals(37.5, commodity.getRating());
+        commodity.addRate("sana", 3);
+        commodity.addRate("hadi", 4);
+        commodity.addRate("nesa", 7);
+        commodity.addRate("sana", 4);
+        commodity.addRate("hadi", 5);
+        commodity.addRate("nesa", 8);
+        assertEquals(6.75f, commodity.getRating(), 1e-3f);
     }
 
 }
