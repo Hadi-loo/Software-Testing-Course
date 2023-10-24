@@ -6,6 +6,7 @@ import model.Commodity;
 import model.User;
 import exceptions.NotExistentCommodity;
 import exceptions.NotExistentUser;
+import exceptions.InvalidScoreRange;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +42,8 @@ public class CommoditiesController {
         } catch (NotExistentCommodity e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (NumberFormatException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (InvalidScoreRange e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

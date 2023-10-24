@@ -46,7 +46,7 @@ public class Baloot {
     }
 
     public void addCommodityToUserBuyList(String userId, String commodityId)
-            throws NotExistentUser, NotExistentCommodity, AlreadyInBuyList {
+            throws NotExistentUser, NotExistentCommodity, AlreadyInBuyList, NotInStock {
         User user = getUserById(userId);
         Commodity commodity = getCommodityById(commodityId);
 
@@ -79,7 +79,7 @@ public class Baloot {
         return total;
     }
 
-    public void withdrawPayableAmount(User user) throws InsufficientCredit, NotInStock {
+    public void withdrawPayableAmount(User user) throws InsufficientCredit, NotInStock, IllegalArgumentException {
         float amount = getCurrentBuyListPrice(user);
         user.withdrawCredit(amount);
 
