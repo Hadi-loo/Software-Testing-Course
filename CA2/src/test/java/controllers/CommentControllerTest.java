@@ -34,9 +34,12 @@ public class CommentControllerTest {
         Baloot balootMock = mock(Baloot.class);
         Comment commentMock = mock(Comment.class);
         when(balootMock.getCommentById(1)).thenReturn(commentMock);
+        doNothing().when(commentMock).addUserVote("hadi", "like");
 
         commentController.setBaloot(balootMock);
         ResponseEntity<String> response = commentController.likeComment("1", input);
+        verify(balootMock).getCommentById(1);
+        verify(commentMock).addUserVote("hadi", "like");
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -49,9 +52,12 @@ public class CommentControllerTest {
         Baloot balootMock = mock(Baloot.class);
         Comment commentMock = mock(Comment.class);
         when(balootMock.getCommentById(2)).thenReturn(commentMock);
+        doNothing().when(commentMock).addUserVote("hadi", "like");
 
         commentController.setBaloot(balootMock);
         ResponseEntity<String> response = commentController.likeComment("2", input);
+        verify(balootMock).getCommentById(2);
+        verify(commentMock).addUserVote("hadi", "like");
         assertEquals("The comment was successfully liked!", response.getBody());
     }
 
@@ -66,6 +72,7 @@ public class CommentControllerTest {
 
         commentController.setBaloot(balootMock);
         ResponseEntity<String> response = commentController.likeComment("3", input);
+        verify(balootMock).getCommentById(3);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
@@ -82,18 +89,8 @@ public class CommentControllerTest {
 
         commentController.setBaloot(balootMock);
         ResponseEntity<String> response = commentController.likeComment("4", input);
+        verify(balootMock).getCommentById(4);
         assertEquals(NOT_EXISTENT_COMMENT, response.getBody());
-    }
-
-    @Test
-    @DisplayName("AddUserVote in like comment should be called")
-    void testLikeCommentAddUserVoteCalled() {
-        Baloot balootMock = mock(Baloot.class);
-        Comment commentMock = mock(Comment.class);
-        commentMock.addUserVote("hadi", "like");
-
-        commentController.setBaloot(balootMock);
-        verify(commentMock).addUserVote("hadi", "like");
     }
 
     @Test
@@ -105,9 +102,12 @@ public class CommentControllerTest {
         Baloot balootMock = mock(Baloot.class);
         Comment commentMock = mock(Comment.class);
         when(balootMock.getCommentById(1)).thenReturn(commentMock);
+        doNothing().when(commentMock).addUserVote("sana", "dislike");
 
         commentController.setBaloot(balootMock);
         ResponseEntity<String> response = commentController.dislikeComment("1", input);
+        verify(balootMock).getCommentById(1);
+        verify(commentMock).addUserVote("sana", "dislike");
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -120,9 +120,12 @@ public class CommentControllerTest {
         Baloot balootMock = mock(Baloot.class);
         Comment commentMock = mock(Comment.class);
         when(balootMock.getCommentById(2)).thenReturn(commentMock);
+        doNothing().when(commentMock).addUserVote("sana", "dislike");
 
         commentController.setBaloot(balootMock);
         ResponseEntity<String> response = commentController.dislikeComment("2", input);
+        verify(balootMock).getCommentById(2);
+        verify(commentMock).addUserVote("sana", "dislike");
         assertEquals("The comment was successfully disliked!", response.getBody());
     }
 
@@ -137,6 +140,7 @@ public class CommentControllerTest {
 
         commentController.setBaloot(balootMock);
         ResponseEntity<String> response = commentController.dislikeComment("3", input);
+        verify(balootMock).getCommentById(3);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
@@ -153,17 +157,8 @@ public class CommentControllerTest {
 
         commentController.setBaloot(balootMock);
         ResponseEntity<String> response = commentController.dislikeComment("4", input);
+        verify(balootMock).getCommentById(4);
         assertEquals(NOT_EXISTENT_COMMENT, response.getBody());
     }
-
-    @Test
-    @DisplayName("AddUserVote in dislike comment should be called")
-    void testDislikeCommentAddUserVoteCalled() throws NotExistentComment {
-        Baloot balootMock = mock(Baloot.class);
-        Comment commentMock = mock(Comment.class);
-        commentMock.addUserVote("sana", "dislike");
-
-        commentController.setBaloot(balootMock);
-        verify(commentMock).addUserVote("sana", "dislike");
-    }
+    
 }
