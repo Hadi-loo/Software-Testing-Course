@@ -10,7 +10,7 @@ public class Engine {
         orderHistory = new ArrayList<>();
     }
 
-    int getAverageOrderQuantityByCustomer(int customer) {
+    int getAverageOrderQuantityByCustomer(int customer) throws Exception {
         var sum = 0;
         var count = 0;
 
@@ -23,6 +23,10 @@ public class Engine {
 
         if (orderHistory.size() == 0) {
             return 0;
+        }
+
+        if (count == 0) {
+            throw new Exception("Customer does not exist");
         }
 
         return sum / count;
@@ -56,7 +60,7 @@ public class Engine {
         return diff;
     }
 
-    int getCustomerFraudulentQuantity(Order order) {
+    int getCustomerFraudulentQuantity(Order order) throws Exception {
 
         var averageOrderQuantity = getAverageOrderQuantityByCustomer(order.customer);
 
@@ -67,7 +71,7 @@ public class Engine {
         return 0;
     }
 
-    public int addOrderAndGetFraudulentQuantity(Order order) {
+    public int addOrderAndGetFraudulentQuantity(Order order) throws Exception {
         if (orderHistory.contains(order)) {
             return 0;
         }
