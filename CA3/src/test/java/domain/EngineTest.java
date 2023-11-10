@@ -60,4 +60,44 @@ public class EngineTest {
         engine.orderHistory.add(order);
         assertThrows(Exception.class, () -> engine.getAverageOrderQuantityByCustomer(2));
     }
+
+    @Test
+    @DisplayName("quantity difference should be 0 when there are no orders")
+    public void testQuantityDifferenceIsZeroWithNoOrder() {
+        int quantityPatternByPrice = engine.getQuantityPatternByPrice(20);
+        assertEquals(quantityPatternByPrice, 0);
+    }
+
+    @Test
+    @DisplayName("quantity difference should be 0 when there is one order")
+    public void testQuantityDifferenceIsZeroWithOneOrder() {
+        setUpWithArgs(order, 1, 5, 10, 6);
+        engine.orderHistory.add(order);
+        int quantityPatternByPrice = engine.getQuantityPatternByPrice(20);
+        assertEquals(quantityPatternByPrice, 0);
+    }
+
+    @Test
+    @DisplayName("quantity difference should be 0 when there are multiple orders with different prices")
+    public void testQuantityDifferenceIsZeroWithDifferentPrices() {
+        setUpWithArgs(order, 1, 5, 10, 6);
+        engine.orderHistory.add(order);
+        Order order2 = new Order();
+        setUpWithArgs(order2, 2, 5, 20, 10);
+        engine.orderHistory.add(order2);
+        int quantityPatternByPrice = engine.getQuantityPatternByPrice(30);
+        assertEquals(quantityPatternByPrice, 0);
+    }
+
+    @Test
+    @DisplayName("quantity difference should be correct when there are multiple orders with the same price")
+    public void testQuantityDifferenceIsCorrectWithSamePrices() {
+        setUpWithArgs(order, 1, 5, 5, 6);
+        engine.orderHistory.add(order);
+        Order order2 = new Order();
+        setUpWithArgs(order2, 2, 5, 10, 10);
+        engine.orderHistory.add(order2);
+        int quantityPatternByPrice = engine.getQuantityPatternByPrice(10);
+        assertEquals(quantityPatternByPrice, 4);
+    }
 }
