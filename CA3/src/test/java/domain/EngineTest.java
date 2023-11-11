@@ -100,6 +100,21 @@ public class EngineTest {
     }
 
     @Test
+    @DisplayName("quantity difference should be 0 when there are multiple orders with the same price but different quantities")
+    public void testQuantityDifferenceIsZeroWithSamePricesDifferentQuantities() {
+        setUpWithArgs(order, 1, 6, 5, 5);
+        engine.orderHistory.add(order);
+        Order order2 = new Order();
+        setUpWithArgs(order2, 2, 5, 10, 10);
+        engine.orderHistory.add(order2);
+        Order order3 = new Order();
+        setUpWithArgs(order3, 3, 7, 10, 20);
+        engine.orderHistory.add(order3);
+        int quantityPatternByPrice = engine.getQuantityPatternByPrice(10);
+        assertEquals(0, quantityPatternByPrice);
+    }
+
+    @Test
     @DisplayName("fraudulent quantity should be 0 when the order quantity is less than or equal to the average order quantity")
     public void testFraudulentQuantityIsZeroWithLessEqualOrderQuantity() throws Exception {
         setUpWithArgs(order, 1, 5, 5, 6);
