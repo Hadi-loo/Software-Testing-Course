@@ -25,8 +25,7 @@ public class EngineTest {
     @Test
     @DisplayName("average order should be 0 when there are no orders")
     public void testAverageQuantityIsZeroWithNoOrder() throws Exception {
-        int customer_id = 5;
-        int averageOrderQuantityByCustomer = engine.getAverageOrderQuantityByCustomer(customer_id);
+        int averageOrderQuantityByCustomer = engine.getAverageOrderQuantityByCustomer(5);
         assertEquals(0, averageOrderQuantityByCustomer);
     }
 
@@ -112,6 +111,21 @@ public class EngineTest {
         engine.orderHistory.add(order3);
         int quantityPatternByPrice = engine.getQuantityPatternByPrice(10);
         assertEquals(0, quantityPatternByPrice);
+    }
+
+    @Test
+    @DisplayName("quantity difference should be correct when there are multiple orders")
+    public void testQualityDifferenceShouldBeCorrectWithMultipleOrder() {
+        setUpWithArgs(order, 1, 6, 5, 5);
+        engine.orderHistory.add(order);
+        Order order2 = new Order();
+        setUpWithArgs(order2, 2, 5, 10, 10);
+        engine.orderHistory.add(order2);
+        Order order3 = new Order();
+        setUpWithArgs(order3, 3, 7, 10, 15);
+        engine.orderHistory.add(order3);
+        int quantityPatternByPrice = engine.getQuantityPatternByPrice(10);
+        assertEquals(5, quantityPatternByPrice);
     }
 
     @Test
