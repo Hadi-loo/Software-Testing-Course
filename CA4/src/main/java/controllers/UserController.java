@@ -29,8 +29,12 @@ public class UserController {
 
     @PostMapping(value = "/users/{id}/credit")
     public ResponseEntity<String> addCredit(@PathVariable String id, @RequestBody Map<String, String> input) {
+        String creditString = input.get("credit");
+        if (creditString == null)
+            return new ResponseEntity<>("Credit is null.", HttpStatus.BAD_REQUEST);
+
         try {
-            float credit = Float.parseFloat(input.get("credit"));
+            float credit = Float.parseFloat(creditString);
             baloot.getUserById(id).addCredit(credit);
             return new ResponseEntity<>("credit added successfully!", HttpStatus.OK);
         } catch (InvalidCreditRange e) {

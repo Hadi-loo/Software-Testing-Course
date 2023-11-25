@@ -129,4 +129,17 @@ public class UserControllerTest {
                 .andExpect(content().string("Please enter a valid number for the credit amount."));
     }
 
+    @Test
+    @DisplayName("Test should return bad request when the credit is null")
+    public void testAddCreditWithNullCredit() throws Exception {
+        User user = setUpWithArgs();
+        when(balootMock.getUserById("hadi")).thenReturn(user);
+
+        Map<String, String> invalidCreditInput = Collections.singletonMap("credit",null);
+        mvc.perform(post("/users/hadi/credit")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(invalidCreditInput)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Credit is null."));
+    }
 }
