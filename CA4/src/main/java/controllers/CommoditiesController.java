@@ -1,5 +1,6 @@
 package controllers;
 
+import exceptions.InvalidScoreRange;
 import service.Baloot;
 import model.Comment;
 import model.Commodity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 public class CommoditiesController {
@@ -38,15 +40,19 @@ public class CommoditiesController {
 
     @PostMapping(value = "/commodities/{id}/rate")
     public ResponseEntity<String> rateCommodity(@PathVariable String id, @RequestBody Map<String, String> input) {
+        String rateString = input.get("rate");
+        if (rateString == null) {
+            return new ResponseEntity<>("rate is null.", HttpStatus.BAD_REQUEST);
+        }
         try {
-            int rate = Integer.parseInt(input.get("rate"));
+            int rate = Integer.parseInt(rateString);
             String username = input.get("username");
             Commodity commodity = baloot.getCommodityById(id);
             commodity.addRate(username, rate);
             return new ResponseEntity<>("rate added successfully!", HttpStatus.OK);
         } catch (NotExistentCommodity e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | InvalidScoreRange e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -60,7 +66,8 @@ public class CommoditiesController {
         User user = null;
         try {
             user = baloot.getUserById(username);
-        } catch (NotExistentUser ignored) {
+        } catch (NotExistentUser e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
 
         Comment comment = new Comment(commentId, user.getEmail(), user.getUsername(), Integer.parseInt(id), commentText);
@@ -80,6 +87,10 @@ public class CommoditiesController {
     public ResponseEntity<ArrayList<Commodity>> searchCommodities(@RequestBody Map<String, String> input) {
         String searchOption = input.get("searchOption");
         String searchValue = input.get("searchValue");
+
+        if (Objects.equals(searchOption, null) || Objects.equals(searchValue, null)) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
+        }
 
         ArrayList<Commodity> commodities = switch (searchOption) {
             case "name" -> baloot.filterCommoditiesByName(searchValue);
