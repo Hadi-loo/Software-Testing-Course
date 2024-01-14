@@ -80,16 +80,6 @@ public class UserStepDefinitions {
         assertEquals(newBalance, user.getCredit());
     }
 
-    @Then("An InvalidCreditRange exception should be thrown")
-    public void anInvalidCreditRangeExceptionShouldBeThrown() {
-        assertInstanceOf(InvalidCreditRange.class, exception);
-    }
-
-    @Then("An InsufficientCredit exception should be thrown")
-    public void anInsufficientCreditExceptionShouldBeThrown() {
-        assertInstanceOf(InsufficientCredit.class, exception);
-    }
-
     @Then("the item should be removed from user's buyList")
     public void theItemShouldBeRemovedFromUserSBuyList() {
         assertFalse(user.getBuyList().containsKey(commodity.getId()));
@@ -105,9 +95,14 @@ public class UserStepDefinitions {
         assertInstanceOf(CommodityIsNotInBuyList.class, exception);
     }
 
-    @And("the user's balance should remain {float}")
-    public void theUserSBalanceShouldRemain(float balance) {
-        assertEquals(balance, user.getCredit());
+    @And("An InvalidCreditRange exception should be thrown")
+    public void anInvalidCreditRangeExceptionShouldBeThrown() {
+        assertInstanceOf(InvalidCreditRange.class, exception);
+    }
+
+    @And("An InsufficientCredit exception should be thrown")
+    public void anInsufficientCreditExceptionShouldBeThrown() {
+        assertInstanceOf(InsufficientCredit.class, exception);
     }
 
     @And("the item should not be removed from user's buyList")
