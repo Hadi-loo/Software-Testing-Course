@@ -1,5 +1,6 @@
 package model;
 
+import exceptions.InsufficientCredit;
 import exceptions.InvalidCreditRange;
 import io.cucumber.java.en.*;
 import io.cucumber.spring.CucumberContextConfiguration;
@@ -26,15 +27,28 @@ public class UserStepDefinitions {
         }
     }
 
+    @When("the user withdraws credit of {float} from their account")
+    public void theUserWithdrawsCreditOfFromTheirAccount(float amount) {
+        try {
+            user.withdrawCredit(amount);
+        } catch (Exception e) {
+            exception = e;
+        }
+    }
+
     @Then("the user's new balance should be {float}")
     public void theUserSNewBalanceShouldBe(float newBalance) {
         assertEquals(newBalance, user.getCredit());
     }
 
-
     @Then("An InvalidCreditRange exception should be thrown")
     public void anInvalidCreditRangeExceptionShouldBeThrown() {
         assertInstanceOf(InvalidCreditRange.class, exception);
+    }
+
+    @Then("An InsufficientCredit exception should be thrown")
+    public void anInsufficientCreditExceptionShouldBeThrown() {
+        assertInstanceOf(InsufficientCredit.class, exception);
     }
 
     @And("the user's balance should remain {float}")
