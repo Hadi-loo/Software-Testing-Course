@@ -1,246 +1,32 @@
-<!-- TOC -->
-  * [Sample API Requests](#sample-api-requests)
-    * [Authentication](#authentication)
-      * [Login](#login)
-      * [Signup](#signup)
-    * [Buy List](#buy-list)
-      * [Get Buy List](#get-buy-list)
-      * [Get Purchased List](#get-purchased-list)
-      * [Add to Buy List](#add-to-buy-list)
-      * [Remove from Buy List](#remove-from-buy-list)
-      * [Purchase Buy List](#purchase-buy-list)
-    * [Comment](#comment)
-      * [Like a Comment](#like-a-comment)
-      * [Dislike a Comment](#dislike-a-comment)
-    * [Commodity](#commodity)
-      * [Get All Commodities](#get-all-commodities)
-      * [Get a Specific Commodity](#get-a-specific-commodity)
-      * [Rate a Commodity](#rate-a-commodity)
-      * [Add a Comment to a Commodity](#add-a-comment-to-a-commodity)
-      * [Get Comments for a Commodity](#get-comments-for-a-commodity)
-      * [Search Commodities](#search-commodities)
-      * [Get Suggested Commodities for a Commodity](#get-suggested-commodities-for-a-commodity)
-    * [Provider](#provider)
-      * [Get a Specific Provider](#get-a-specific-provider)
-      * [Get Commodities Provided by a Provider](#get-commodities-provided-by-a-provider)
-    * [User](#user)
-      * [Get a Specific User](#get-a-specific-user)
-      * [Add Credit to a User](#add-credit-to-a-user)
-<!-- TOC -->
+# Software Testing Course Repository
 
-## Sample API Requests
+Welcome to the Software Testing Course GitHub repository! This repository contains 6 projects that cover various aspects of software testing, ranging from unit testing to GUI testing and beyond. Each project focuses on a specific topic to enhance our understanding of software testing techniques.
 
-Here are some example cURL requests to demonstrate how to interact with the API.
+## Projects
 
-### Authentication
-#### Login
+1. **Unit Testing with JUnit**
+   - This project focuses on adding unit tests to an e-commerce Java project using JUnit.
 
-```bash
-curl -X POST http://localhost:8080/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "amin",
-    "password": "456"
-  }'
-```
+2. **Test Doubles with Mockito**
+   - In this project, we will learn how to use test doubles in an e-commerce Java project using Mockito to simulate and test and verify interactions between objects and with external dependencies.
 
-#### Signup
-```bash
-curl -X POST http://localhost:8080/signup \
-  -H "Content-Type: application/json" \
-  -d '{
-    "address": "Tehran",
-    "birthDate": "1990-05-15",
-    "email": "example@example.com",
-    "username": "Reza",
-    "password": "secret"
-  }'
+3. **Graph-Based Testing with JaCoCo**
+   - In this project we will get introduced to the concept of graph-based testing and learn how to calculate branch and statement coverage using JaCoCo.
 
-```
+4. **API Testing**
+   - In this project, we will learn the fundamentals of API testing.
 
-### Buy List
+5. **Mutation Testing with PIT and CI with GitHub Actions**
+   - This project focuses on using mutation testing to improve the quality of an e-commerce Java project using PIT. 
+   - It also covers adding continuous integration (CI) to the project using GitHub Actions.
 
-#### Get Buy List
+6. **GUI Testing with Katalon Recorder and Behavior Driven Development with Cucumber**
+   - In this project, we will be introduced to GUI testing using Katalon Recorder. 
+   - Additionally, we will learn about Behavior Driven Development (BDD) using Cucumber.
 
-```bash
-curl -X POST http://localhost:8080/buy-list \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "amin"
-  }'
-```
+Feel free to explore each project folder for detailed instructions, code samples, and exercises. \
+Happy testing!
 
-#### Get Purchased List
+## License
 
-```bash
-curl -X POST http://localhost:8080/purchased-list \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "amin"
-  }'
-```
-
-#### Add to Buy List
-
-```bash
-curl -X POST http://localhost:8080/buy-list/add \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "amin",
-    "id": "1"
-  }'
-```
-
-#### Remove from Buy List
-
-```bash
-curl -X POST http://localhost:8080/buy-list/remove \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "amin",
-    "id": "1"
-  }'
-```
-
-#### Purchase Buy List
-
-```bash
-curl -X POST http://localhost:8080/buy-list/purchase \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "amin"
-  }'
-```
-
-### Comment
-#### Like a Comment
-
-```bash
-curl -X POST http://localhost:8080/comment/123/like \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "amin"
-  }'
-```
-
-
-#### Dislike a Comment
-
-```bash
-curl -X POST http://localhost:8080/comment/123/dislike \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "amin"
-  }'
-```
-
-Replace `"123"` with the appropriate comment ID.
-
-### Commodity
-#### Get All Commodities
-
-```bash
-curl -X GET http://localhost:8080/commodities
-```
-
-#### Get a Specific Commodity
-
-```bash
-curl -X GET http://localhost:8080/commodities/123
-```
-
-Replace `"123"` with the appropriate commodity ID.
-
-#### Rate a Commodity
-
-```bash
-curl -X POST http://localhost:8080/commodities/123/rate \
-  -H "Content-Type: application/json" \
-  -d '{
-    "rate": 5,
-    "username": "amin"
-  }'
-```
-
-Replace `"123"` with the appropriate commodity ID.
-
-#### Add a Comment to a Commodity
-
-```bash
-curl -X POST http://localhost:8080/commodities/123/comment \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "example_user",
-    "comment": "This is a great product!"
-  }'
-```
-
-Replace `"123"` with the appropriate commodity ID.
-
-#### Get Comments for a Commodity
-
-```bash
-curl -X GET http://localhost:8080/commodities/123/comment
-```
-
-Replace `"123"` with the appropriate commodity ID.
-
-#### Search Commodities
-
-```bash
-curl -X POST http://localhost:8080/commodities/search \
-  -H "Content-Type: application/json" \
-  -d '{
-    "searchOption": "name",
-    "searchValue": "example"
-  }'
-```
-
-Replace `"name"` with the desired search option ("name", "category", or "provider"), and `"example"` with the search value.
-
-#### Get Suggested Commodities for a Commodity
-
-```bash
-curl -X GET http://localhost:8080/commodities/123/suggested
-```
-
-Replace `"123"` with the appropriate commodity ID.
-
-### Provider
-#### Get a Specific Provider
-
-```bash
-curl -X GET http://localhost:8080/providers/123
-```
-
-Replace `"123"` with the appropriate provider ID.
-
-#### Get Commodities Provided by a Provider
-
-```bash
-curl -X GET http://localhost:8080/providers/123/commodities
-```
-
-Replace `"123"` with the appropriate provider ID.
-
-### User
-
-#### Get a Specific User
-
-```bash
-curl -X GET http://localhost:8080/users/123
-```
-
-Replace `"123"` with the appropriate user ID.
-
-#### Add Credit to a User
-
-```bash
-curl -X POST http://localhost:8080/users/123/credit \
-  -H "Content-Type: application/json" \
-  -d '{
-    "credit": 50.0
-  }'
-```
-
-Replace `"123"` with the appropriate user ID, and `"50.0"` with the desired credit amount.
+This repository is licensed under the [MIT License](LICENSE).
